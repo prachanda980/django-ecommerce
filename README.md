@@ -140,5 +140,16 @@ python manage.py test apps.products
    - Create Web Service -> "Deploy from Registry".
    - Image: `docker.io/username/fastshop:latest`
    - Add Env Vars (DATABASE_URL provided by Render).
+## 📸 Screenshots
+![Screenshot 1](demo/1.png)
+![Screenshot 2](demo/2.png)
+![Screenshot 3](demo/3.png)
+![Screenshot 4](demo/4.png)
+![Screenshot 5](demo/5.png)
+![Screenshot 6](demo/6.png)
 
+## 🎥 Demo Video
 
+[![Watch the Demo]](demo/demovideo.mp4)
+
+_Click the image above to watch the demo video_
