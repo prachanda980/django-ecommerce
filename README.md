@@ -16,8 +16,6 @@ A robust e-commerce system built with Django designed to handle high-traffic sal
 
 ### 🧠 Intelligent Recommendations
 - **Content-Based Filtering**: Suggests products using TF-IDF Vectorization and Cosine Similarity.
-- **Cold Start Handling**: Fallback mechanisms for new users (Trending/Top Selling).
-- **Personalized Feeds**: Recommendations update automatically as product descriptions or user interactions change.
 
 ### ⭐ Reviews & Social Proof
 - **Verified Reviews**: Logic ensures only users who purchased a product can rate it.
@@ -143,6 +141,4 @@ python manage.py test apps.products
    - Image: `docker.io/username/fastshop:latest`
    - Add Env Vars (DATABASE_URL provided by Render).
 
-## 📄 License
 
-This project is open-source and available under the MIT License.
