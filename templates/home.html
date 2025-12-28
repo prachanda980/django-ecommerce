@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="relative w-full h-[400px] md:h-[500px] bg-slate-950 overflow-hidden group" id="hero-carousel">
+    <div class="relative w-full h-full overflow-hidden">
+        <div id="track" class="flex w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]" style="transform: translateX(0%);">
+            
+            <div class="w-full h-full flex-shrink-0 relative">
+                <img src="https://cdn.home-designing.com/wp-content/uploads/2016/06/dark-and-sophisticated-interior-ideas.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-70" alt="Interior">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div class="relative h-full flex items-center justify-center text-center px-6">
+                    <div class="max-w-4xl">
+                        <span class="inline-block py-2 px-5 rounded-full bg-indigo-600/20 border border-indigo-500/50 text-indigo-300 text-sm font-semibold mb-6 uppercase tracking-widest">Collection 2025</span>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">Elevate Your <span class="text-indigo-400">Living Space</span></h1>
+                        <a href="#shop-section" class="inline-block px-10 py-4 bg-indigo-600 text-white rounded-full font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full h-full flex-shrink-0 relative">
+                <img src="https://thumbs.dreamstime.com/b/elegant-clothing-store-interior-crystal-chandeliers-dark-walls-stylish-displays-creating-atmosphere-luxury-high-end-391201443.jpg"
+                     class="absolute inset-0 w-full h-full object-cover opacity-70" alt="Fashion">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div class="relative h-full flex items-center justify-center text-center px-6">
+                    <div class="max-w-4xl">
+                        <span class="inline-block py-2 px-5 rounded-full bg-purple-600/20 border border-purple-500/50 text-purple-300 text-sm font-semibold mb-6 uppercase tracking-widest">Premium Style</span>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">Style <span class="text-purple-400">Redefined</span></h1>
+                        <a href="#shop-section" class="inline-block px-10 py-4 bg-purple-600 text-white rounded-full font-black hover:bg-purple-700 transition-all">Explore</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="prevBtn" class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/30 hover:bg-black/60 text-white border border-white/10 z-30 transition-all flex items-center justify-center backdrop-blur-md">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button id="nextBtn" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/30 hover:bg-black/60 text-white border border-white/10 z-30 transition-all flex items-center justify-center backdrop-blur-md">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-3 z-30" id="dotsContainer"></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="bg-slate-950">
+    
+    {# Spotlight Section: Only show on the first page to keep browsing clean #}
+    {% if top_rated and not current_category and page_obj.number == 1 %}
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 mb-10">
+                <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Top Rated Choice</h2>
+                <div class="h-[1px] flex-1 bg-slate-800"></div>
+            </div>
+
+            <div class="relative group bg-gradient-to-br from-indigo-950/40 to-slate-900/40 backdrop-blur-xl border border-indigo-500/20 rounded-[2.5rem] p-8 md:p-12 overflow-hidden shadow-2xl">
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-600/10 blur-[100px] rounded-full"></div>
+                
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="order-2 lg:order-1">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="flex text-amber-400 text-sm">
+                                {% for i in "12345" %} <i class="fas fa-star"></i> {% endfor %}
+                            </div>
+                            <span class="text-indigo-300 font-bold text-xs uppercase tracking-widest">Community Choice</span>
+                        </div>
+                        
+                        <h3 class="text-4xl md:text-5xl font-black text-white leading-tight mb-6">{{ top_rated.name }}</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed mb-8 max-w-lg font-medium">{{ top_rated.description|truncatewords:30 }}</p>
+
+                        <div class="flex flex-wrap items-center gap-8">
+                            <div>
+                                <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Price</p>
+                                <p class="text-3xl font-black text-indigo-400">Rs: {{ top_rated.price }}</p>
+                            </div>
+                            <a href="{% url 'products:detail' top_rated.slug %}" 
+                               class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-indigo-600/20 active:scale-95">
+                                View Spotlight
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="order-1 lg:order-2 flex justify-center">
+                        <div class="relative w-full max-w-sm">
+                            <div class="absolute inset-0 bg-indigo-500/20 blur-3xl rounded-full"></div>
+                            {% if top_rated.images.first %}
+                                <img src="{{ top_rated.images.first.image.url }}" 
+                                     class="relative w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(79,70,229,0.4)] transition-transform duration-700 group-hover:scale-105" 
+                                     alt="{{ top_rated.name }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <section id="shop-section" class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 mb-12">
+                <h2 class="text-4xl font-black text-white tracking-tight">
+                    {% if current_category %}{{ current_category.name }}{% else %}Exclusive Products{% endif %}
+                </h2>
+                <div class="h-[1px] flex-1 bg-slate-800"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
+                {% for product in products %}
+                    {# Exclude top_rated from grid ONLY on the first page if it's already in the spotlight #}
+                    {% if page_obj.number == 1 and product.id == top_rated.id %}
+                        {% else %}
+                    <a href="{% url 'products:detail' product.slug %}" class="block group">
+                        <div class="product-box bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                            <div class="relative h-64 overflow-hidden">
+                                {% with main_image=product.images.first %}
+                                    {% if main_image %}
+                                        <img src="{{ main_image.image.url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ product.name }}">
+                                    {% else %}
+                                        <div class="w-full h-full bg-slate-800 flex items-center justify-center">
+                                            <i class="fas fa-image text-4xl text-slate-600"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+
+                                {% if not product.is_in_stock %}
+                                    <div class="absolute inset-0 bg-black/80 flex items-center justify-center">
+                                        <span class="bg-red-600 text-white px-8 py-3 font-black rounded-full text-sm uppercase tracking-wider">Sold Out</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="p-6 text-center">
+                                <h3 class="text-lg font-bold text-white mb-4 line-clamp-1">{{ product.name }}</h3>
+                                <div class="mb-4">
+                                    <span class="text-2xl font-black text-indigo-400">Rs: {{ product.price }}</span>
+                                </div>
+                                <form action="{% url 'cart:add' product.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" {% if not product.is_in_stock %}disabled{% endif %}
+                                            class="buy-btn-solid w-full py-4 text-xs font-black uppercase tracking-widest transition-all">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {# High-End Pagination #}
+            {% if is_paginated %}
+            <div class="flex flex-col items-center py-12">
+                <nav class="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-xl border border-slate-800 p-2 rounded-2xl shadow-2xl">
+                    
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}#shop-section" 
+                       class="w-12 h-12 flex items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-indigo-600 transition-all duration-300">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-indigo-600 text-white font-black shadow-lg shadow-indigo-600/40">
+                                {{ num }}
+                            </div>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}#shop-section" 
+                               class="w-12 h-12 flex items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-slate-800 transition-all">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}#shop-section" 
+                       class="w-12 h-12 flex items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-indigo-600 transition-all duration-300">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% endif %}
+                </nav>
+                <p class="mt-6 text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const track = document.getElementById('track');
+        const slides = Array.from(track.children);
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const dotsContainer = document.getElementById('dotsContainer');
+
+        let currentIndex = 0;
+        let slideTimer;
+
+        dotsContainer.innerHTML = ''; 
+        slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = `h-2 rounded-full transition-all duration-300 ${i === 0 ? 'bg-white w-8' : 'bg-white/30 w-2'}`;
+            dot.onclick = () => { currentIndex = i; updateCarousel(); startTimer(); };
+            dotsContainer.appendChild(dot);
+        });
+        const dots = Array.from(dotsContainer.children);
+
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach((dot, i) => {
+                if (i === currentIndex) {
+                    dot.classList.add('bg-white', 'w-8');
+                    dot.classList.remove('bg-white/30', 'w-2');
+                } else {
+                    dot.classList.remove('bg-white', 'w-8');
+                    dot.classList.add('bg-white/30', 'w-2');
+                }
+            });
+        }
+
+        function nextSlide() { currentIndex = (currentIndex + 1) % slides.length; updateCarousel(); }
+        function prevSlide() { currentIndex = (currentIndex - 1 + slides.length) % slides.length; updateCarousel(); }
+        function startTimer() { clearInterval(slideTimer); slideTimer = setInterval(nextSlide, 5000); }
+
+        nextBtn.addEventListener('click', () => { nextSlide(); startTimer(); });
+        prevBtn.addEventListener('click', () => { prevSlide(); startTimer(); });
+
+        const carouselEl = document.getElementById('hero-carousel');
+        carouselEl.addEventListener('mouseenter', () => clearInterval(slideTimer));
+        carouselEl.addEventListener('mouseleave', startTimer);
+        startTimer();
+    });
+</script>
+{% endblock %}

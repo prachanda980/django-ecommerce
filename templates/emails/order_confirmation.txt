@@ -1,0 +1,4 @@
+Hello {{ user.first_name }},
+Thank you for your order #{{ order.order_number }}!
+Total Amount: ${{ order.total }}
+We are processing it now.

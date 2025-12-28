@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Order Confirmed - FastShop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0b1120; 
+            font-family: Arial, Helvetica, sans-serif; 
+            color: #e2e8f0; 
+            line-height: 1.6; 
+        }
+        a { color: #a78bfa; text-decoration: none; }
+        a:hover { color: #c4b5fd; }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #0f172a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid #1e293b;
+        }
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+            color: white;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #cbd5e1;
+        }
+        .order-card {
+            background-color: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 30px 0;
+            border: 1px solid #334155;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .order-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .order-date {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px dashed #334155;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item-name {
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+        .item-price {
+            color: #a78bfa;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .total {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 24px;
+            color: white;
+        }
+        .total-amount {
+            color: #a78bfa;
+            font-size: 28px;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            font-size: 14px;
+            background-color: #020617;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #a78bfa;
+            margin-bottom: 10px;
+        }
+        .bolt {
+            color: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td align="center">
+                <table class="container" cellpadding="0" cellspacing="0" role="presentation">
+                    <!-- Header -->
+                    <tr>
+                        <td class="header" align="center">
+                            <h1>Order Confirmed! 🎉</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td class="content">
+                            <p class="greeting">Hi {{ user.first_name|default:"there" }},</p>
+                            <p class="message">
+                                Thank you for shopping with <strong>FastShop</strong>! 
+                                Your order has been successfully placed and we're preparing it for shipment.
+                            </p>
+
+                            <!-- Order Details Card -->
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-number">Order #{{ order.order_number }}</div>
+                                    <div class="order-date">{{ order.created_at|date:"F j, Y" }}</div>
+                                </div>
+
+                                <h4 style="color: #e2e8f0; margin: 20px 0 16px 0;">Items Ordered</h4>
+
+                                {% for item in order.items.all %}
+                                <div class="item">
+                                    <span class="item-name">
+                                        {{ item.quantity }} × {{ item.product.name }}
+                                    </span>
+                                    <span class="item-price">${{ item.subtotal }}</span>
+                                </div>
+                                {% endfor %}
+
+                                <div class="total">
+                                    Total: <span class="total-amount">${{ order.total }}</span>
+                                </div>
+                            </div>
+
+                            <p class="message">
+                                You’ll receive another email when your order ships. 
+                                Track your order anytime from your account.
+                            </p>
+
+                            <p class="message">
+                                Thank you for choosing FastShop!<br>
+                                <strong>The FastShop Team</strong>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer">
+                            <div class="logo">
+                                <span class="bolt">⚡</span> FastShop
+                            </div>
+                            <p>&copy; 2025 FastShop. High Performance E-Commerce.</p>
+                            <p>All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Top Rated Choice - FastShop{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-16 px-4 bg-slate-950 flex items-center justify-center">
+    <div class="max-w-5xl w-full">
+        
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-black uppercase tracking-[0.2em] mb-4">
+                <i class="fas fa-crown mr-2"></i> Community Choice
+            </span>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter">Top Rated Product</h1>
+            <p class="text-gray-400 font-medium mt-4">The highest rated item in our collection based on user feedback.</p>
+        </div>
+
+        {% if product %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-slate-900/40 backdrop-blur-xl border border-slate-800 p-8 md:p-12 rounded-[3rem] shadow-2xl">
+                
+                <div class="relative group">
+                    <div class="absolute -inset-4 bg-indigo-500/20 rounded-[2.5rem] blur-2xl group-hover:bg-indigo-500/30 transition-all"></div>
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" 
+                             class="relative w-full h-auto rounded-[2rem] border border-slate-700 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]">
+                    {% else %}
+                        <div class="relative w-full aspect-square bg-slate-800 rounded-[2rem] flex items-center justify-center border border-slate-700">
+                             <i class="fas fa-image text-6xl text-slate-700"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="flex text-amber-400 text-xl">
+                                {% for i in "12345" %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                            </div>
+                            <span class="text-white font-black text-lg">{{ product.avg_rating|floatformat:1 }}</span>
+                            <span class="text-gray-500 font-bold text-sm uppercase">({{ product.review_count }} Reviews)</span>
+                        </div>
+                        <h2 class="text-3xl md:text-5xl font-black text-white leading-tight mb-4">{{ product.name }}</h2>
+                        <p class="text-gray-400 leading-relaxed font-medium line-clamp-4">
+                            {{ product.description }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-slate-800 pt-8">
+                        <div>
+                            <p class="text-gray-500 text-xs font-black uppercase tracking-widest mb-1">Premium Price</p>
+                            <p class="text-4xl font-black text-indigo-400">${{ product.price }}</p>
+                        </div>
+                        
+                        <a href="{% url 'products:detail' product.slug %}" 
+                           class="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-indigo-600/20 active:scale-95">
+                            VIEW DETAILS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-20 bg-slate-900/50 rounded-[3rem] border-2 border-dashed border-slate-800">
+                <p class="text-gray-500 font-bold uppercase tracking-widest">No ratings recorded yet</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

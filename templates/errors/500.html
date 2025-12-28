@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error - FastShop{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div class="max-w-lg w-full text-center">
+        
+        <div class="bg-slate-800/60 backdrop-blur-md rounded-3xl p-10 border border-slate-700 shadow-2xl relative overflow-hidden">
+            
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+
+            <div class="mb-6 relative z-10">
+                <i class="fas fa-server text-8xl text-red-500 opacity-80 animate-pulse"></i>
+            </div>
+
+            <h1 class="text-6xl font-black text-white mb-2 tracking-tight">500</h1>
+            <h2 class="text-2xl font-bold text-gray-200 mb-4">Internal Server Error</h2>
+            <p class="text-gray-400 mb-8 text-lg leading-relaxed">
+                Something went wrong on our end. We are tracking the error and working to fix it.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+                <a href="{% url 'products:list' %}" 
+                   class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition border border-slate-600">
+                   <i class="fas fa-redo-alt mr-2"></i> Try Again
+                </a>
+                
+                <a href="mailto:support@fastshop.com" 
+                   class="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold shadow-lg shadow-red-500/30 transition transform hover:scale-105">
+                   <i class="fas fa-envelope mr-2"></i> Contact Support
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

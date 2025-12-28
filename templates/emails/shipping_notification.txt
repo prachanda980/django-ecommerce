@@ -1,0 +1,16 @@
+Order Shipped! 🚚
+
+Hi {{ order.user.username }},
+
+Great news! Your order #{{ order.order_number }} has been shipped and is on its way to you via FastShop Express.
+
+Shipping Details:
+----------------------------------
+Order Number: {{ order.order_number }}
+Shipping To: {{ order.shipping_address }}
+
+You can track your order here:
+http://{{ request.get_host }}{% url 'orders:detail' order.id %}
+
+Thank you for choosing FastShop!
+The FastShop Team

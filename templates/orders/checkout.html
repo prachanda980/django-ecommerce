@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Secure Checkout | FastShop{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-slate-950">
+    <div class="max-w-7xl mx-auto">
+
+        {# Success / Error Messages from Backend #}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-6 p-5 rounded-2xl border flex items-center gap-3
+                    {% if message.tags == 'error' %}
+                        bg-red-500/20 border-red-500/50 text-red-200
+                    {% elif message.tags == 'success' %}
+                        bg-emerald-500/20 border-emerald-500/50 text-emerald-200
+                    {% else %}
+                        bg-blue-500/20 border-blue-500/50 text-blue-200
+                    {% endif %}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-triangle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} text-xl"></i>
+                    <span class="font-medium">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <h1 class="text-4xl md:text-5xl font-black text-white text-center mb-12 tracking-tighter">
+            Secure Checkout
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <!-- Checkout Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-slate-800/40 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 shadow-2xl p-8 md:p-12">
+                    <form action="{% url 'orders:checkout' %}" method="POST" id="checkout-form" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Step 1: Delivery & Contact Info -->
+                        <h2 class="text-2xl font-bold text-white mb-10 flex items-center gap-4">
+                            <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-black text-white">1</span>
+                            Delivery & Contact Info
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Phone -->
+                            <div>
+                                <label for="customer_phone" class="block text-sm font-black uppercase tracking-widest text-gray-400 mb-3">
+                                    Contact Phone <span class="text-indigo-400">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    name="customer_phone"
+                                    id="customer_phone"
+                                    value="{{ request.user.phone|default:'' }}"
+                                    required
+                                    class="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner placeholder-slate-500"
+                                    placeholder="+977 98XXXXXXXX"
+                                    autocomplete="tel">
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div>
+                                <label for="shipping_address" class="block text-sm font-black uppercase tracking-widest text-gray-400 mb-3">
+                                    Shipping Address <span class="text-indigo-400">*</span>
+                                </label>
+                                <textarea
+                                    name="shipping_address"
+                                    id="shipping_address"
+                                    rows="4"
+                                    required
+                                    class="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl text-white focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner placeholder-slate-500"
+                                    placeholder="House No., Street, Area, City, Province&#10;e.g. 123, New Road, Kathmandu, Bagmati">{{ form.shipping_address.value|default:'' }}</textarea>
+                            </div>
+
+                            <!-- Billing Address Toggle -->
+                            <div class="pt-4">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <input
+                                        type="checkbox"
+                                        id="same_as_shipping"
+                                        name="use_shipping_for_billing"
+                                        checked
+                                        class="w-6 h-6 rounded-lg border-slate-600 bg-slate-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-950 cursor-pointer">
+                                    <label for="same_as_shipping" class="text-gray-300 font-medium cursor-pointer select-none">
+                                        Billing address is the same as shipping
+                                    </label>
+                                </div>
+
+                                <div id="billing-section" class="hidden">
+                                    <label for="billing_address" class="block text-sm font-black uppercase tracking-widest text-gray-400 mb-3">
+                                        Billing Address <span class="text-indigo-400">(Optional)</span>
+                                    </label>
+                                    <textarea
+                                        name="billing_address"
+                                        id="billing_address"
+                                        rows="4"
+                                        class="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-2xl text-white focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner placeholder-slate-500"
+                                        placeholder="Leave blank if same as shipping address">{{ form.billing_address.value|default:'' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Payment Method -->
+                        <h2 class="text-2xl font-bold text-white mb-10 border-t border-slate-800 pt-12 mt-16 flex items-center gap-4">
+                            <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-black text-white">2</span>
+                            Payment Method
+                        </h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+                            <!-- Credit Card -->
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" name="payment_method" value="credit_card" class="peer sr-only">
+                                <div class="p-8 rounded-2xl border-2 border-slate-700 bg-slate-900/30 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 transition-all group-hover:border-slate-500">
+                                    <i class="fas fa-credit-card text-4xl mb-4 text-gray-400 peer-checked:text-indigo-400 transition-colors"></i>
+                                    <p class="text-sm font-black uppercase tracking-widest text-white">Credit Card</p>
+                                </div>
+                            </label>
+
+                            <!-- PayPal -->
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" name="payment_method" value="paypal" class="peer sr-only">
+                                <div class="p-8 rounded-2xl border-2 border-slate-700 bg-slate-900/30 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 transition-all group-hover:border-slate-500">
+                                    <i class="fab fa-paypal text-4xl mb-4 text-gray-400 peer-checked:text-indigo-400 transition-colors"></i>
+                                    <p class="text-sm font-black uppercase tracking-widest text-white">PayPal</p>
+                                </div>
+                            </label>
+
+                            <!-- Cash on Delivery -->
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" name="payment_method" value="cod" class="peer sr-only" checked>
+                                <div class="p-8 rounded-2xl border-2 border-slate-700 bg-slate-900/30 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 transition-all group-hover:border-slate-500">
+                                    <i class="fas fa-hand-holding-usd text-4xl mb-4 text-gray-400 peer-checked:text-indigo-400 transition-colors"></i>
+                                    <p class="text-sm font-black uppercase tracking-widest text-white">Cash on Delivery</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            class="w-full py-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 text-white font-black text-xl rounded-2xl transition-all shadow-xl shadow-indigo-600/30 active:scale-[0.98] flex items-center justify-center gap-4 group disabled:cursor-not-allowed">
+                            <span id="btn-text" class="flex items-center gap-4">
+                                <i class="fas fa-lock group-hover:animate-pulse"></i>
+                                Complete Purchase
+                            </span>
+                            <span id="btn-loader" class="hidden flex items-center gap-3">
+                                <i class="fas fa-circle-notch fa-spin"></i>
+                                Processing...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-900/80 backdrop-blur-md rounded-[2.5rem] border border-slate-800 shadow-2xl p-8 sticky top-24">
+                    <h2 class="text-xl font-black text-white uppercase tracking-tighter mb-8 border-b border-slate-800 pb-4">
+                        Order Summary
+                    </h2>
+
+                    <div class="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                        {% for item in items %}
+                        <div class="flex gap-4 items-center pb-4 border-b border-slate-800 last:border-0">
+                            <div class="w-20 h-20 rounded-xl bg-slate-800 overflow-hidden flex-shrink-0 border border-slate-700">
+                                {% if item.product.images.first %}
+                                    <img src="{{ item.product.images.first.image.url }}"
+                                         class="w-full h-full object-cover"
+                                         alt="{{ item.product.name }}"
+                                         loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-slate-600">
+                                        <i class="fas fa-image text-2xl"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-white font-bold text-sm truncate">{{ item.product.name }}</p>
+                                <p class="text-slate-400 text-xs mt-1">
+                                    Qty: <span class="font-semibold text-white">{{ item.quantity }}</span>
+                                    × Rs. <span class="font-semibold text-white">{{ item.product.price }}</span>
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-white font-bold">Rs. {{ item.get_total_price }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-slate-400 text-center py-8">Your cart is empty.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-10 pt-8 border-t border-slate-800 space-y-5">
+                        <div class="flex justify-between text-slate-300 font-semibold">
+                            <span>Subtotal</span>
+                            <span>Rs. {{ total }}</span>
+                        </div>
+                        <div class="flex justify-between text-emerald-400 font-bold text-lg">
+                            <span>Shipping</span>
+                            <span>FREE</span>
+                        </div>
+                        <div class="flex justify-between text-3xl font-black text-white pt-6 border-t border-slate-700">
+                            <span>Total</span>
+                            <span class="text-indigo-400">Rs. {{ total }}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 text-center mt-6">
+                            <i class="fas fa-shield-alt text-emerald-400 mr-1"></i>
+                            Secure checkout powered by FastShop
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkbox = document.getElementById('same_as_shipping');
+        const billingSection = document.getElementById('billing-section');
+        const shippingInput = document.getElementById('shipping_address');
+        const billingInput = document.getElementById('billing_address');
+        const form = document.getElementById('checkout-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+
+        // Sync billing address with shipping when checkbox is checked
+        const updateBillingState = () => {
+            if (checkbox.checked) {
+                billingSection.classList.add('hidden');
+                billingInput.value = shippingInput.value;
+                billingInput.removeAttribute('required');
+            } else {
+                billingSection.classList.remove('hidden');
+                billingInput.setAttribute('required', '');
+                // Optional: clear if user unchecks
+                // billingInput.value = '';
+            }
+        };
+
+        checkbox.addEventListener('change', updateBillingState);
+        shippingInput.addEventListener('input', () => {
+            if (checkbox.checked) {
+                billingInput.value = shippingInput.value;
+            }
+        });
+
+        // Form submit: final sync + loading state
+        form.addEventListener('submit', (e) => {
+            // Final sync
+            if (checkbox.checked) {
+                billingInput.value = shippingInput.value;
+            }
+
+            // Show loading
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+        });
+
+        // Initial state
+        updateBillingState();
+    });
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    #billing-section { transition: all 0.3s ease; }
+</style>
+{% endblock %}

@@ -1,0 +1,326 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark"> <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}FastShop{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+
+    <style>
+        :root { --primary: #4f46e5; --accent: #fbbf24; }
+        
+        /* Fixed Dark Mode Styling */
+        body { background-color: #0b1120; color: #e2e8f0; }
+        nav { 
+            background-color: rgba(15, 23, 42, 0.95) !important; 
+            border-color: #1e293b; 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+        }
+        .nav-link { color: #e2e8f0 !important; transition: color 0.3s ease; }
+        .nav-link:hover { color: var(--accent) !important; }
+        
+        footer { background: #1e293b; border-color: #334155; }
+
+        .buy-btn-solid {
+            background-color: #f59e0b; color: #000; font-weight: 800; text-transform: uppercase;
+            padding: 16px 0; width: 100%; transition: all 0.3s ease; position: relative;
+            overflow: hidden; border-radius: 0 0 16px 16px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .animate-slide-in { animation: slideIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <nav class="sticky top-0 z-50 shadow-sm border-b" x-data="{ mobileOpen: false }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="{% url 'products:list' %}" class="text-2xl font-bold text-indigo-500 flex items-center gap-2">
+                    <i class="fas fa-bolt"></i> FastShop
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'products:list' %}" class="nav-link font-medium">Shop</a>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'orders:list' %}" class="nav-link">Orders</a>
+                        
+                        <a href="{% url 'cart:detail' %}" class="relative nav-link flex items-center">
+                            <i class="fas fa-shopping-cart text-xl text-slate-200"></i>
+                            {% if request.user.cart.item_count > 0 %}
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                                    {{ request.user.cart.item_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+
+                        <div class="relative flex items-center" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center gap-2 focus:outline-none group">
+                                <div class="relative w-8 h-8 shrink-0 flex items-center justify-center">
+                                    <img src="{% static 'images/user.png' %}" alt="Profile" 
+                                         class="w-full h-full rounded-full object-cover border-none"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                    
+                                    <div class="hidden w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full items-center justify-center text-white font-bold text-xs shadow-lg">
+                                        {{ user.username|slice:":1"|upper }}
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down text-slate-400 text-[10px] transition-transform duration-200" 
+                                   :class="{ 'rotate-180': open }"></i>
+                            </button>
+
+                            <div x-show="open" @click.away="open = false" x-transition
+                                 class="absolute right-0 top-full mt-3 w-56 bg-slate-800 rounded-xl shadow-xl border border-slate-700 overflow-hidden z-50">
+                                <div class="px-4 py-3 border-b border-slate-700">
+                                    <p class="text-white font-semibold">
+                                        {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                                    </p>
+                                    <p class="text-slate-400 text-sm truncate">{{ user.email }}</p>
+                                </div>
+                                <div class="py-1">
+                                    <a href="{% url 'accounts:profile' %}" class="flex items-center gap-3 px-4 py-3 text-slate-200 hover:bg-slate-700/50 transition">
+                                        <i class="fas fa-user text-indigo-500"></i> My Profile
+                                    </a>
+                                    {% if user.is_staff %}
+                                        <a href="{% url 'accounts:admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-indigo-400 hover:bg-slate-700/50 transition font-bold">
+                                            <i class="fas fa-chart-line"></i> Admin Dashboard
+                                        </a>
+                                        <div class="border-t border-slate-700 my-1"></div>
+                                    {% endif %}
+                                    <a href="{% url 'orders:list' %}" class="flex items-center gap-3 px-4 py-3 text-slate-200 hover:bg-slate-700/50 transition">
+                                        <i class="fas fa-box-open text-emerald-500"></i> My Orders
+                                    </a>
+                                    <div class="border-t border-slate-700 my-1"></div>
+                                    <form action="{% url 'accounts:logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-900/20 transition text-left">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                        <a href="{% url 'accounts:register' %}" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition shadow-md">Sign Up</a>
+                    {% endif %}
+                </div>
+
+                <div class="md:hidden flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'cart:detail' %}" class="relative text-slate-200">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        {% if request.user.cart.item_count > 0 %}
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                {{ request.user.cart.item_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                    
+                    <button @click="mobileOpen = !mobileOpen" class="text-gray-300 p-2">
+                        <i class="fas" :class="mobileOpen ? 'fa-times' : 'fa-bars'" style="font-size: 1.5rem"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="mobileOpen" x-transition class="md:hidden bg-slate-900 border-b border-slate-800 shadow-xl overflow-y-auto max-h-[80vh]">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                
+                <a href="{% url 'products:list' %}" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl">
+                    <i class="fas fa-store w-6 text-slate-500"></i> Shop
+                </a>
+
+                {% if user.is_authenticated %}
+                    <div class="mt-4 pt-4 border-t border-slate-800">
+                        <div class="flex items-center px-3 mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-base font-medium leading-none text-white">
+                                    {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                                </div>
+                                <div class="text-sm font-medium leading-none text-slate-400 mt-1">{{ user.email }}</div>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'accounts:profile' %}" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl">
+                            <i class="fas fa-user w-6 text-indigo-500"></i> My Profile
+                        </a>
+
+                        {% if user.is_staff %}
+                            <a href="{% url 'accounts:admin_dashboard' %}" class="block px-3 py-3 text-base font-bold text-indigo-400 hover:text-indigo-300 hover:bg-slate-800 rounded-xl">
+                                <i class="fas fa-chart-pie w-6"></i> Admin Dashboard
+                            </a>
+                        {% endif %}
+
+                        <a href="{% url 'orders:list' %}" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl">
+                            <i class="fas fa-box-open w-6 text-emerald-500"></i> My Orders
+                        </a>
+
+                        <a href="{% url 'cart:detail' %}" class="block px-3 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl flex items-center justify-between">
+                            <span><i class="fas fa-shopping-cart w-6 text-slate-200"></i> Cart</span>
+                            {% if request.user.cart.item_count > 0 %}
+                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{{ request.user.cart.item_count }}</span>
+                            {% endif %}
+                        </a>
+
+                        <div class="mt-2 pt-2 border-t border-slate-800">
+                            <form action="{% url 'accounts:logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="w-full text-left block px-3 py-3 text-base font-medium text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-xl">
+                                    <i class="fas fa-sign-out-alt w-6"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="mt-4 pt-4 border-t border-slate-800 grid gap-3 p-3">
+                        <a href="{% url 'accounts:login' %}" class="block w-full text-center px-4 py-3 border border-slate-700 rounded-xl text-slate-300 font-medium hover:bg-slate-800 transition">Log In</a>
+                        <a href="{% url 'accounts:register' %}" class="block w-full text-center px-4 py-3 bg-indigo-600 rounded-xl text-white font-bold hover:bg-indigo-700 shadow-lg transition">Sign Up</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="fixed top-20 right-5 z-50 space-y-3">
+        {% for message in messages %}
+        <div class="bg-slate-800 shadow-2xl rounded-lg p-5 flex items-center gap-3 border-l-4 {% if message.tags == 'success' %}border-emerald-500 text-emerald-400{% else %}border-red-500 text-red-400{% endif %} animate-slide-in">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} text-2xl"></i>
+            <p class="font-medium text-white">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block hero %}{% endblock %}
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="py-20 bg-gradient-to-b from-slate-950 to-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Why Shop With FastShop?</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">Experience luxury shopping with exclusive collections, unbeatable deals, and premium service.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+                <div class="group relative bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700 shadow-2xl overflow-hidden hover:shadow-indigo-500/20 hover:border-indigo-500/50 transition-all duration-500">
+                    <div class="p-10 text-center">
+                        <div class="mb-8 flex justify-center"><i class="fas fa-crown text-7xl text-indigo-400 opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"></i></div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Exclusive Premium Collections</h3>
+                        <p class="text-base md:text-lg text-gray-300 leading-relaxed">Handpicked luxury items crafted with timeless elegance and superior quality.</p>
+                        <a href="{% url 'products:list' %}" class="mt-8 inline-block text-indigo-400 hover:text-indigo-300 font-semibold transition">Shop Now →</a>
+                    </div>
+                </div>
+                <div class="group relative bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700 shadow-2xl overflow-hidden hover:shadow-purple-500/20 hover:border-purple-500/50 transition-all duration-500">
+                    <div class="p-10 text-center">
+                        <div class="mb-8 flex justify-center"><i class="fas fa-gem text-7xl text-purple-400 opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"></i></div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Limited Edition Deals</h3>
+                        <p class="text-base md:text-lg text-gray-300 leading-relaxed">Grab rare finds and flash sales on high-end fashion and tech before they're gone.</p>
+                        <a href="{% url 'products:list' %}" class="mt-8 inline-block text-purple-400 hover:text-purple-300 font-semibold transition">View Deals →</a>
+                    </div>
+                </div>
+                <div class="group relative bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700 shadow-2xl overflow-hidden hover:shadow-emerald-500/20 hover:border-emerald-500/50 transition-all duration-500">
+                    <div class="p-10 text-center">
+                        <div class="mb-8 flex justify-center"><i class="fas fa-shipping-fast text-7xl text-emerald-400 opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"></i></div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Fast & Secure Delivery</h3>
+                        <p class="text-base md:text-lg text-gray-300 leading-relaxed">Free express shipping on all orders with real-time tracking and secure packaging.</p>
+                        <a href="#" class="mt-8 inline-block text-emerald-400 hover:text-emerald-300 font-semibold transition">Learn More →</a>
+                    </div>
+                </div>
+                <div class="group relative bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700 shadow-2xl overflow-hidden hover:shadow-amber-500/20 hover:border-amber-500/50 transition-all duration-500">
+                    <div class="p-10 text-center">
+                        <div class="mb-8 flex justify-center"><i class="fas fa-shield-alt text-7xl text-amber-400 opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"></i></div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Trusted Quality Guarantee</h3>
+                        <p class="text-base md:text-lg text-gray-300 leading-relaxed">30-day returns, authenticity verified, and dedicated customer support for peace of mind.</p>
+                        <a href="#" class="mt-8 inline-block text-amber-400 hover:text-amber-300 font-semibold transition">Our Promise →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto border-t border-slate-800 bg-slate-900/80 backdrop-blur-md pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div class="space-y-6">
+                    <a href="{% url 'products:list' %}" class="text-2xl font-black text-indigo-500 flex items-center gap-2"><i class="fas fa-bolt"></i> FastShop</a>
+                    <p class="text-gray-400 text-sm leading-relaxed font-medium">Experience high-performance shopping with curated luxury collections and lightning-fast delivery.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all"><i class="fab fa-instagram text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all"><i class="fab fa-facebook-f text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white transition-all"><i class="fab fa-twitter text-lg"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Quick Links</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{% url 'products:list' %}" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Store Catalog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">New Arrivals</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Special Offers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Best Sellers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Support</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{% url 'orders:list' %}" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Track Order</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Returns & Exchanges</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition font-medium">Privacy Center</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Stay Connected</h4>
+                    <p class="text-gray-400 text-sm mb-4">Join our newsletter for exclusive deals and updates.</p>
+                    <form class="flex flex-col gap-3">
+                        <input type="email" placeholder="Email Address" class="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all">
+                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-indigo-600/20">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-8">
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-tighter">&copy; 2025 FastShop. All rights reserved.</p>
+                    <div class="hidden md:flex gap-4">
+                        <i class="fab fa-cc-visa text-2xl text-gray-600"></i>
+                        <i class="fab fa-cc-mastercard text-2xl text-gray-600"></i>
+                        <i class="fab fa-cc-paypal text-2xl text-gray-600"></i>
+                        <i class="fab fa-cc-apple-pay text-2xl text-gray-600"></i>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-gray-500 text-xs font-bold uppercase"><i class="fas fa-shield-alt text-emerald-500"></i> Secure SSL Encrypted</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const messages = document.querySelectorAll('.animate-slide-in');
+                messages.forEach(msg => {
+                    msg.style.transition = 'opacity 0.5s ease';
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500);
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

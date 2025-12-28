@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Your Order is on the Way! - FastShop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        body { margin: 0; padding: 0; background-color: #0b1120; font-family: Arial, sans-serif; color: #e2e8f0; line-height: 1.6; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #0f172a; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b; }
+        .header { background: linear-gradient(135deg, #10b981, #059669); padding: 40px 20px; text-align: center; }
+        .header h1 { font-size: 32px; font-weight: bold; margin: 0; color: white; }
+        .content { padding: 40px 30px; }
+        .status-badge { background-color: #064e3b; color: #34d399; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-block; margin-bottom: 20px; }
+        .button { display: inline-block; background-color: #4f46e5; color: white; padding: 16px 32px; border-radius: 12px; font-weight: bold; text-decoration: none; margin-top: 20px; }
+        .footer { text-align: center; padding: 30px; color: #64748b; font-size: 12px; background-color: #020617; }
+    </style>
+</head>
+<body>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <table class="container" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="header">
+                            <h1>Order Shipped! 🚚</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="content">
+                            <div class="status-badge">SHIPPED & TRACKED</div>
+                            <p style="font-size: 20px;">Hi {{ order.user.username }},</p>
+                            <p>Great news! Your order <strong>#{{ order.order_number }}</strong> has been shipped and is on its way to you.</p>
+                            
+                            <div style="background-color: #1e293b; padding: 20px; border-radius: 12px; margin: 25px 0;">
+                                <p style="margin: 0; color: #94a3b8; font-size: 14px;">Carrier</p>
+                                <p style="margin: 5px 0 15px 0; font-weight: bold; font-size: 18px;">FastShop Express</p>
+                                
+                                <p style="margin: 0; color: #94a3b8; font-size: 14px;">Shipping Address</p>
+                                <p style="margin: 5px 0 0 0; color: #cbd5e1;">{{ order.shipping_address }}</p>
+                            </div>
+
+                            <div align="center">
+                                <a href="http://yourdomain.com/orders/{{ order.id }}/" class="button">Track Your Order</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="footer">
+                            <p>&copy; 2025 FastShop. High Performance E-Commerce.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

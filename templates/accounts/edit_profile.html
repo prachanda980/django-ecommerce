@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-slate-800/60 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700 overflow-hidden">
+            <div class="p-8 md:p-10">
+                
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div class="flex items-center space-x-6 mb-6 p-4 bg-slate-700/50 rounded-xl">
+                        <div class="shrink-0">
+                            {% if user.avatar %}
+                                <img class="h-16 w-16 object-cover rounded-full ring-2 ring-indigo-500" 
+                                     src="{{ user.avatar.url }}" alt="Profile photo">
+                            {% else %}
+                                <div class="h-16 w-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xl font-bold">
+                                    {{ user.email|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <label class="block w-full">
+                            <span class="sr-only">Choose profile photo</span>
+                            <input type="file" name="avatar" class="block w-full text-sm text-slate-300
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-full file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-indigo-600 file:text-white
+                              file:hover:bg-indigo-700 cursor-pointer
+                            "/>
+                        </label>
+                    </div>
+
+                    {% for field in form %}
+                        {% if field.name != 'avatar' %}
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-300">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <p class="text-red-400 text-sm mt-1">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="flex justify-end pt-6">
+                        <button type="submit" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
