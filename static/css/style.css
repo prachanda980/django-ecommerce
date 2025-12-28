@@ -1,0 +1,223 @@
+/* Custom styles for the e-commerce store */
+
+/* General styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Alert styles */
+.alert {
+    @apply relative p-4 mb-4 border rounded-md;
+}
+
+.alert-success {
+    @apply bg-green-100 border-green-300 text-green-700;
+}
+
+.alert-error {
+    @apply bg-red-100 border-red-300 text-red-700;
+}
+
+.alert-warning {
+    @apply bg-yellow-100 border-yellow-300 text-yellow-700;
+}
+
+.alert-info {
+    @apply bg-blue-100 border-blue-300 text-blue-700;
+}
+
+/* Product card hover effects */
+.product-card {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading spinner */
+.loading-spinner {
+    @apply inline-block w-4 h-4 border-2 border-gray-200 rounded-full border-t-blue-600 animate-spin;
+}
+
+/* WebSocket status indicators */
+.ws-connected {
+    @apply text-green-500;
+}
+
+.ws-disconnected {
+    @apply text-red-500;
+}
+
+.ws-connecting {
+    @apply text-yellow-500;
+}
+
+/* Stock level indicators */
+.stock-high {
+    @apply bg-green-100 text-green-800;
+}
+
+.stock-low {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.stock-out {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Button disabled state */
+.btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+}
+
+/* Flash sale animation */
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+}
+
+.flash-sale-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Quantity input styling */
+.quantity-input {
+    @apply w-16 text-center border-0 focus:ring-0;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Product grid responsive adjustments */
+@media (max-width: 640px) {
+    .product-grid {
+        @apply grid-cols-1;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .product-grid {
+        @apply grid-cols-2;
+    }
+}
+
+@media (min-width: 1025px) {
+    .product-grid {
+        @apply grid-cols-3;
+    }
+}
+
+/* WebSocket connection status */
+.connection-status {
+    @apply inline-flex items-center space-x-1 text-xs;
+}
+
+.connection-status i {
+    @apply text-xs;
+}
+
+/* Real-time update indicators */
+.update-indicator {
+    @apply inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse;
+}
+
+/* Cart count animation */
+@keyframes cart-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.cart-update {
+    animation: cart-bounce 0.3s ease-in-out;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.loading-spinner-large {
+    @apply w-12 h-12 border-4 border-gray-200 rounded-full border-t-blue-600 animate-spin;
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.checkmark-success {
+    animation: checkmark 0.3s ease-in-out;
+}
+
+/* Error shake animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bg-gray-50 {
+        background-color: #ffffff;
+    }
+    
+    .text-gray-600 {
+        color: #000000;
+    }
+    
+    .border-gray-200 {
+        border-color: #000000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
